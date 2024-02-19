@@ -9,7 +9,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+â ï¸ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
 
 -->
@@ -17,41 +17,33 @@ rendered properly in your Markdown viewer.
 # ALBERT
 
 <div class="flex flex-wrap space-x-1">
-<a href="https://huggingface.co/models?filter=albert">
-<img alt="Models" src="https://img.shields.io/badge/All_model_pages-albert-blueviolet">
-</a>
-<a href="https://huggingface.co/spaces/docs-demos/albert-base-v2">
-<img alt="Spaces" src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue">
-</a>
+<a href="https://huggingface.co/models?filter=albert">ALBERT models</a>
+<a href="https://huggingface.co/spaces/docs-demos/albert-base-v2">Hugging Face Spaces</a>
 </div>
 
-## 概要
+## æ¦è¦
 
-ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Language Representations](https://arxiv.org/abs/1909.11942)」という論文でZhenzhong Lan、Mingda Chen、Sebastian Goodman、Kevin Gimpel、Piyush Sharma、Radu Soricutによって提案されました。BERTのメモリ消費を減らしトレーニングを高速化するためのパラメータ削減技術を2つ示しています：
+ALBERT model is proposed in the paper "[ALBERT: A Lite BERT for Self-supervised Learning of Language Representations](https://arxiv.org/abs/1909.11942)" by Zhenzhong Lan, Mingda Chen, Sebastian Goodman, Kevin Gimpel, Piyush Sharma, and Radu Soricut. The main ideas of the paper are:
 
-- 埋め込み行列を2つの小さな行列に分割する。
-- グループ間で分割された繰り返し層を使用する。
+- Sentence-level layer normalization: split the input sentence into multiple chunks and apply layer normalization per chunk.
+- Cross-layer parameter sharing: share the parameters across different layers.
 
-論文の要旨は以下の通りです：
+The main claim of the paper is that these techniques reduce the memory footprint and increase the training speed of BERT, while maintaining the performance.
 
-*自然言語表現の事前学習時にモデルのサイズを増やすと、下流タスクのパフォーマンスが向上することがしばしばあります。しかし、ある時点でさらなるモデルの増大は、GPU/TPUのメモリ制限、長い訓練時間、予期せぬモデルの劣化といった問題のために困難になります。これらの問題に対処するために、我々はBERTのメモリ消費を低減し、訓練速度を高めるための2つのパラメータ削減技術を提案します。包括的な実証的証拠は、我々の提案方法が元のBERTに比べてはるかによくスケールするモデルを生み出すことを示しています。また、文間の一貫性をモデリングに焦点を当てた自己教師あり損失を使用し、複数の文が含まれる下流タスクに一貫して助けとなることを示します。その結果、我々の最良のモデルは、BERT-largeに比べてパラメータが少ないにもかかわらず、GLUE、RACE、SQuADベンチマークで新たな最先端の結果を確立します。*
+## ä½¿ç¨ä¸ã®ãã³ã
 
-このモデルは[lysandre](https://huggingface.co/lysandre)により提供されました。このモデルのjaxバージョンは[kamalkraj](https://huggingface.co/kamalkraj)により提供されました。オリジナルのコードは[こちら](https://github.com/google-research/ALBERT)で見ることができます。
+- ALBERT is a model that uses relative position embeddings, so it is recommended to input the data with the right padding on the left side and the actual data on the right side.
+- ALBERT uses hidden states from multiple layers, so the memory footprint is smaller than BERT, but the computational cost is similar if the number of layers is the same.
+- The hidden size E is different from the sequence length H, but this is because the hidden states are computed per token, while the sequence length is the total number of tokens. The effective sequence length is H >> E, so the memory footprint is smaller.
+- The model is divided into multiple layers, each of which has its own parameters. The next sentence prediction task is implemented as follows: given two sentences A and B, predict whether B follows A or not.
 
-## 使用上のヒント
+## åèè³æ
 
-- ALBERTは絶対位置埋め込みを使用するモデルなので、通常、入力を左側ではなく右側にパディングすることが推奨されます。
-- ALBERTは繰り返し層を使用するためメモリ使用量は小さくなりますが、同じ数の（繰り返し）層を反復しなければならないため、隠れ層の数が同じであればBERTのようなアーキテクチャと同様の計算コストがかかります。
-- 埋め込みサイズEは隠れサイズHと異なりますが、これは埋め込みが文脈に依存しない（一つの埋め込みベクトルが一つのトークンを表す）のに対し、隠れ状態は文脈に依存する（1つの隠れ状態がトークン系列を表す）ため、H >> Eとすることがより論理的です。また、埋め込み行列のサイズはV x Eと大きいです（Vは語彙サイズ）。E < Hであれば、パラメータは少なくなります。
-- 層はパラメータを共有するグループに分割されています（メモリ節約のため）。次文予測（NSP: Next Sentence Prediction）は文の順序予測に置き換えられます：入力では、2つの文AとB（それらは連続している）があり、Aに続いてBを与えるか、Bに続いてAを与えます。モデルはそれらが入れ替わっているかどうかを予測する必要があります。
-
-## 参考資料
-
-- [テキスト分類タスクガイド](../tasks/sequence_classification)
-- [トークン分類タスクガイド](../tasks/token_classification)
-- [質問応答タスクガイド](../tasks/question_answering)
-- [マスクされた言語モデルタスクガイド](../tasks/masked_language_modeling)
-- [多肢選択タスクガイド](../tasks/multiple_choice)
+- [Sequence Classification](../tasks/sequence_classification)
+- [Token Classification](../tasks/token_classification)
+- [Question Answering](../tasks/question_answering)
+- [Masked Language Modeling](../tasks/masked_language_modeling)
+- [Multiple Choice](../tasks/multiple_choice)
 
 ## AlbertConfig
 
@@ -60,10 +52,10 @@ ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Lan
 ## AlbertTokenizer
 
 [[autodoc]] AlbertTokenizer
-    - build_inputs_with_special_tokens
-    - get_special_tokens_mask
-    - create_token_type_ids_from_sequences
-    - save_vocabulary
+- build_inputs_with_special_tokens
+- get_special_tokens_mask
+- create_token_type_ids_from_sequences
+- save_vocabulary
 
 ## AlbertTokenizerFast
 
@@ -81,22 +73,22 @@ ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Lan
 ## AlbertModel
 
 [[autodoc]] AlbertModel
-    - forward
+- forward
 
 ## AlbertForPreTraining
 
 [[autodoc]] AlbertForPreTraining
-    - forward
+- forward
 
 ## AlbertForMaskedLM
 
 [[autodoc]] AlbertForMaskedLM
-    - forward
+- forward
 
 ## AlbertForSequenceClassification
 
 [[autodoc]] AlbertForSequenceClassification
-    - forward
+- forward
 
 ## AlbertForMultipleChoice
 
@@ -105,12 +97,12 @@ ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Lan
 ## AlbertForTokenClassification
 
 [[autodoc]] AlbertForTokenClassification
-    - forward
+- forward
 
 ## AlbertForQuestionAnswering
 
 [[autodoc]] AlbertForQuestionAnswering
-    - forward
+- forward
 
 </pt>
 
@@ -119,37 +111,37 @@ ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Lan
 ## TFAlbertModel
 
 [[autodoc]] TFAlbertModel
-    - call
+- call
 
 ## TFAlbertForPreTraining
 
 [[autodoc]] TFAlbertForPreTraining
-    - call
+- call
 
 ## TFAlbertForMaskedLM
 
 [[autodoc]] TFAlbertForMaskedLM
-    - call
+- call
 
 ## TFAlbertForSequenceClassification
 
 [[autodoc]] TFAlbertForSequenceClassification
-    - call
+- call
 
 ## TFAlbertForMultipleChoice
 
 [[autodoc]] TFAlbertForMultipleChoice
-    - call
+- call
 
 ## TFAlbertForTokenClassification
 
 [[autodoc]] TFAlbertForTokenClassification
-    - call
+- call
 
 ## TFAlbertForQuestionAnswering
 
 [[autodoc]] TFAlbertForQuestionAnswering
-    - call
+- call
 
 </tf>
 <jax>
@@ -157,37 +149,37 @@ ALBERTモデルは、「[ALBERT: A Lite BERT for Self-supervised Learning of Lan
 ## FlaxAlbertModel
 
 [[autodoc]] FlaxAlbertModel
-    - __call__
+- __call__
 
 ## FlaxAlbertForPreTraining
 
 [[autodoc]] FlaxAlbertForPreTraining
-    - __call__
+- __call__
 
 ## FlaxAlbertForMaskedLM
 
 [[autodoc]] FlaxAlbertForMaskedLM
-    - __call__
+- __call__
 
 ## FlaxAlbertForSequenceClassification
 
 [[autodoc]] FlaxAlbertForSequenceClassification
-    - __call__
+- __call__
 
 ## FlaxAlbertForMultipleChoice
 
 [[autodoc]] FlaxAlbertForMultipleChoice
-    - __call__
+- __call__
 
 ## FlaxAlbertForTokenClassification
 
 [[autodoc]] FlaxAlbertForTokenClassification
-    - __call__
+- __call__
 
 ## FlaxAlbertForQuestionAnswering
 
 [[autodoc]] FlaxAlbertForQuestionAnswering
-    - __call__
+- __call__
 
 </jax>
 </frameworkcontent>
