@@ -1,54 +1,45 @@
-<!--Copyright 2020 The HuggingFace Team. All rights reserved.
+<!--
+Copyright 2020 The HuggingFace Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
-an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+â ï¸ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
-
 -->
 
 # Tokenizer
 
-トークナイザーは、モデルの入力の準備を担当します。ライブラリには、すべてのモデルのトークナイザーが含まれています。ほとんど
-トークナイザーの一部は、完全な Python 実装と、
-Rust ライブラリ [🤗 Tokenizers](https://github.com/huggingface/tokenizers)。 「高速」実装では次のことが可能になります。
+Tokenizers are used to provide input to models. They contain tokenizers for all models. Some parts of the tokenizer are
+written in specific high-performance Python code and some parts are implemented in Rust in the ð¤ Tokenizers
+library [ð¤ Tokenizers](https://github.com/huggingface/tokenizers). The following is possible with high-performance
+tokenization:
 
-1. 特にバッチトークン化を行う場合の大幅なスピードアップと
-2. 元の文字列 (文字と単語) とトークン空間の間でマッピングする追加のメソッド (例:
-   特定の文字を含むトークンのインデックス、または特定のトークンに対応する文字の範囲）。
+1. High-speed subword tokenization for special cases
+2. Adding padding between words (tokens) and subword pieces (e.g. adding spaces between tokens)
 
-基本クラス [`PreTrainedTokenizer`] および [`PreTrainedTokenizerFast`]
-モデル入力の文字列入力をエンコードし (以下を参照)、Python をインスタンス化/保存するための一般的なメソッドを実装します。
-ローカル ファイルまたはディレクトリ、またはライブラリによって提供される事前トレーニング済みトークナイザーからの「高速」トークナイザー
-(HuggingFace の AWS S3 リポジトリからダウンロード)。二人とも頼りにしているのは、
-共通メソッドを含む [`~tokenization_utils_base.PreTrainedTokenizerBase`]
-[`~tokenization_utils_base.SpecialTokensMixin`]。
+The base class [`PreTrainedTokenizer`] and [`PreTrainedTokenizerFast`] provide functionality for encoding and
+decoding Python strings, and for saving and loading tokenizer files in the Python pickle format. The tokenizer classes
+are initialized with a pre-trained tokenizer or a path to a tokenizer file. The tokenizer classes also include
+functionality for handling special tokens.
 
-したがって、[`PreTrainedTokenizer`] と [`PreTrainedTokenizerFast`] はメインを実装します。
-すべてのトークナイザーを使用するためのメソッド:
+The [`PreTrainedTokenizer`] and [`PreTrainedTokenizerFast`] classes implement the following functionality:
 
-- トークン化 (文字列をサブワード トークン文字列に分割)、トークン文字列を ID に変換したり、その逆の変換を行ったりします。
-  エンコード/デコード (つまり、トークン化と整数への変換)。
-- 基礎となる構造 (BPE、SentencePiece...) から独立した方法で、語彙に新しいトークンを追加します。
-- 特別なトークン (マスク、文の始まりなど) の管理: トークンの追加、属性への割り当て。
-  トークナイザーにより、簡単にアクセスでき、トークン化中に分割されないようにすることができます。
+- Tokenization (splitting strings into subword tokens), encoding (converting strings or lists of strings to lists of
+  token IDs), and decoding (converting lists of token IDs to strings)
+- Adding new subwords to the vocabulary using custom methods (e.g. BPE, SentencePiece)
+- Handling special tokens (e.g. adding new special tokens, accessing token properties)
 
-[`BatchEncoding`] は、
-[`~tokenization_utils_base.PreTrainedTokenizerBase`] のエンコード メソッド (`__call__`、
-`encode_plus` および `batch_encode_plus`) であり、Python 辞書から派生しています。トークナイザーが純粋な Python の場合
-tokenizer の場合、このクラスは標準の Python 辞書と同じように動作し、によって計算されたさまざまなモデル入力を保持します。
-これらのメソッド (`input_ids`、`attention_mask`...)。トークナイザーが「高速」トークナイザーである場合 (つまり、
-HuggingFace [トークナイザー ライブラリ](https://github.com/huggingface/tokenizers))、このクラスはさらに提供します
-元の文字列 (文字と単語) と
-トークンスペース (例: 指定された文字または対応する文字の範囲を構成するトークンのインデックスの取得)
-与えられたトークンに）。
+The [`BatchEncoding`] class is a Python dictionary-like object that contains encoded data and metadata. It is created
+using the `__call__`, `encode_plus`, or `batch_encode_plus` methods of a tokenizer class. In the case of a "fast"
+tokenizer (HuggingFace [Tokenizers library](https://github.com/huggingface/tokenizers)), the `BatchEncoding` class
+also contains word and token piece (e.g. subword) information.
 
 ## PreTrainedTokenizer
 
@@ -63,8 +54,9 @@ HuggingFace [トークナイザー ライブラリ](https://github.com/huggingfa
 
 ## PreTrainedTokenizerFast
 
-[`PreTrainedTokenizerFast`] は [tokenizers](https://huggingface.co/docs/tokenizers) ライブラリに依存します。 🤗 トークナイザー ライブラリから取得したトークナイザーは、
-🤗 トランスに非常に簡単にロードされます。これがどのように行われるかを理解するには、[🤗 tokenizers からの tokenizers を使用する](../fast_tokenizers) ページを参照してください。
+[`PreTrainedTokenizerFast`] relies on the ð¤ Tokenizers library. Pre-trained tokenizers obtained from the ð¤ Tokenizers
+library can be easily compiled to ð¤ Transformers. More information on how to use the ð¤ Tokenizers library can be
+found in the [Using tokenizers from ð¤ Tokenizers](../fast_tokenizers) tutorial.
 
 [[autodoc]] PreTrainedTokenizerFast
     - __call__
