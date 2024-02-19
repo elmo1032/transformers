@@ -1,1 +1,1 @@
-$PYTHON setup.py install     # Python command to install the script.
+# This is a Python command that runs the 'setup.py
