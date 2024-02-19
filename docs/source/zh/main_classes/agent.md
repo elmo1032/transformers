@@ -1,4 +1,5 @@
-<!--Copyright 2023 The HuggingFace Team. All rights reserved.
+<!--
+Copyright 2023 The HuggingFace Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at
@@ -9,27 +10,27 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+â ï¸ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
 
 -->
 
-# Agents和工具
+# Agents API
 
 <Tip warning={true}>
 
-Transformers Agents是一个实验性的API，它随时可能发生变化。由于API或底层模型容易发生变化，因此由agents返回的结果可能会有所不同。
+Transformers Agents is an experimental API that may change over time. Due to changes in the API or base models,
+the output from agents may vary.
 
+For more information about agents and tools, please refer to the [overview guide](../transformers_agents).
+This page contains the API documentation for the base classes.
 
 </Tip>
 
-要了解更多关于agents和工具的信息，请确保阅读[介绍指南](../transformers_agents)。此页面包含底层类的API文档。
-
-
 ## Agents
 
-我们提供三种类型的agents：[`HfAgent`]使用开源模型的推理端点，[`LocalAgent`]使用您在本地选择的模型，[`OpenAiAgent`]使用OpenAI封闭模型。
-
+We provide three types of agent classes: [`HfAgent`] uses open-source models for inference, [`LocalAgent`] uses models
+provided by the user locally, and [`OpenAiAgent`] uses OpenAI's deployed models.
 
 ### HfAgent
 
@@ -50,15 +51,15 @@ Transformers Agents是一个实验性的API，它随时可能发生变化。由�
 ### Agent
 
 [[autodoc]] Agent 
-    - chat 
-    - run 
-    - prepare_for_new_chat
+- chat 
+- run 
+- prepare_for_new_chat
 
-## 工具
+## Tools
 
-### load_tool
+### load\_tool
 
-[[autodoc]] load_tool
+[[autodoc]] load\_tool
 
 ### Tool
 
@@ -72,21 +73,25 @@ Transformers Agents是一个实验性的API，它随时可能发生变化。由�
 
 [[autodoc]] RemoteTool
 
-### launch_gradio_demo
+### launch\_gradio\_demo
 
-[[autodoc]] launch_gradio_demo
+[[autodoc]] launch\_gradio\_demo
 
-## Agent类型
+## Agent Classes
 
-Agents可以处理工具之间任何类型的对象；工具是多模态的，可以接受和返回文本、图像、音频、视频等类型。为了增加工具之间的兼容性，以及正确地在ipython（jupyter、colab、ipython notebooks等）中呈现这些返回值，我们实现了这些类型的包装类。
+Agents can handle objects of any class; tools are of various types and can accept and return text, images, audio,
+video, etc. To add flexibility and ensure proper display of these objects in ipython (jupyter, colab, ipython
+notebooks, etc.), we have implemented the following classes.
 
-被包装的对象应该继续按照最初的行为方式运作；文本对象应该仍然像字符串一样运作，图像对象应该仍然像`PIL.Image`一样运作。
+Objects of these classes should continue to operate as they did initially; text objects should continue to behave
+as strings, and image objects should continue to behave as `PIL.Image` objects.
 
-这些类型有三个特定目的：
+These classes have three specific purposes:
 
-- 对类型调用 `to_raw` 应该返回底层对象
-- 对类型调用 `to_string` 应该将对象作为字符串返回：在`AgentText`的情况下可能是字符串，但在其他情况下可能是对象序列化版本的路径
-- 在ipython内核中显示它应该正确显示对象
+- When a class is called with `to_raw`, it should return a base-class object
+- When a class is called with `to_string`, it should return the object as a string: in `AgentText`, it might be a
+string, but in other contexts, it might be a list of paths for serialized objects
+- When displayed in an ipython environment, the object should display correctly
 
 ### AgentText
 
