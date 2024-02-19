@@ -1,4 +1,5 @@
-<!--Copyright 2022 The HuggingFace Team. All rights reserved.
+<!--
+Copyright 2022 The HuggingFace Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at
@@ -9,86 +10,70 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+â ï¸ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
-
 -->
 
-# ConvNeXT
+# ConvNeXt
 
 ## Overview
 
-ConvNeXT モデルは、[A ConvNet for the 2020s](https://arxiv.org/abs/2201.03545) で Zhuang Liu、Hanzi Mao、Chao-Yuan Wu、Christoph Feichtenhofer、Trevor Darrell、Saining Xie によって提案されました。
-ConvNeXT は、ビジョン トランスフォーマーの設計からインスピレーションを得た純粋な畳み込みモデル (ConvNet) であり、ビジョン トランスフォーマーよりも優れたパフォーマンスを発揮すると主張しています。
+ConvNeXT is a convolutional neural network (ConvNet) proposed in "[A ConvNet for the 2020s](https://arxiv.org/abs/2201.03545)" by Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, and Saining Xie. It is a ConvNet that achieves state-of-the-art performance by incorporating ideas from recent transformer models while maintaining the simplicity and efficiency of traditional ConvNets.
 
-論文の要約は次のとおりです。
+The main ideas of the paper are as follows:
 
-*視覚認識の「狂騒の 20 年代」は、最先端の画像分類モデルとして ConvNet にすぐに取って代わられた Vision Transformers (ViT) の導入から始まりました。
-一方、バニラ ViT は、オブジェクト検出やセマンティック セグメンテーションなどの一般的なコンピューター ビジョン タスクに適用すると困難に直面します。階層型トランスフォーマーです
-(Swin Transformers など) は、いくつかの ConvNet の以前の機能を再導入し、Transformers を汎用ビジョン バックボーンとして実用的に可能にし、幅広い環境で顕著なパフォーマンスを実証しました。
-さまざまな視覚タスク。ただし、このようなハイブリッド アプローチの有効性は、依然として、固有の誘導性ではなく、トランスフォーマーの本質的な優位性によるところが大きいと考えられています。
-畳み込みのバイアス。この作業では、設計空間を再検討し、純粋な ConvNet が達成できる限界をテストします。標準 ResNet を設計に向けて徐々に「最新化」します。
-ビジョン Transformer の概要を確認し、途中でパフォーマンスの違いに寄与するいくつかの重要なコンポーネントを発見します。この調査の結果は、純粋な ConvNet モデルのファミリーです。
-ConvNextと呼ばれます。 ConvNeXts は完全に標準の ConvNet モジュールから構築されており、精度と拡張性の点で Transformers と有利に競合し、87.8% の ImageNet トップ 1 精度を達成しています。
-標準 ConvNet のシンプルさと効率を維持しながら、COCO 検出と ADE20K セグメンテーションでは Swin Transformers よりも優れたパフォーマンスを発揮します。*
+- The superiority of ConvNets over transformers in computer vision tasks is not due to their inductive biases, but rather their ability to model local interactions and maintain translation equivariance.
+- Recent transformer models have shown that depthwise and zeropadding operations can be used to model local interactions in a way that is competitive with convolutions.
+- By combining the strengths of ConvNets and transformers, it is possible to build a model that achieves state-of-the-art performance while maintaining the simplicity and efficiency of ConvNets.
 
-<img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/convnext_architecture.jpg"
-alt="描画" width="600"/>
+<img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/convnext_architecture.jpg" alt="Diagram" width="600"/>
 
-<small> ConvNeXT アーキテクチャ。 <a href="https://arxiv.org/abs/2201.03545">元の論文</a>から抜粋。</small>
+<small> ConvNeXT architecture. <a href="https://arxiv.org/abs/2201.03545">Paper</a>.</small>
 
-このモデルは、[nielsr](https://huggingface.co/nielsr) によって提供されました。 TensorFlow バージョンのモデルは [ariG23498](https://github.com/ariG23498) によって提供されました。
-[gante](https://github.com/gante)、および [sayakpaul](https://github.com/sayakpaul) (同等の貢献)。元のコードは [こちら](https://github.com/facebookresearch/ConvNeXt) にあります。
+This model was contributed by [nielsr](https://huggingface.co/nielsr) and is based on the original implementation by [ariG23498](https://github.com/ariG23498). The TensorFlow version of the model was contributed by [gante](https://github.com/gante) and [sayakpaul](https://github.com/sayakpaul).
 
 ## Resources
 
-ConvNeXT の使用を開始するのに役立つ公式 Hugging Face およびコミュニティ (🌎 で示される) リソースのリスト。
+- [Hugging Face documentation](https://huggingface.co/docs/transformers/model_doc/convnext)
+- [Model card on Hugging Face Model Hub](https://huggingface.co/facebook/convnext-base)
+- [Official GitHub repository](https://github.com/facebookresearch/ConvNeXt)
 
-<PipelineTag pipeline="image-classification"/>
+## Model architecture
 
-- [`ConvNextForImageClassification`] は、この [サンプル スクリプト](https://github.com/huggingface/transformers/tree/main/examples/pytorch/image-classification) および [ノートブック](https://colab.research.google.com/github/huggingface/notebooks/blob/main/examples/image_classification.ipynb)。
-- 参照: [画像分類タスク ガイド](../tasks/image_classification)
+The ConvNeXT model is a convolutional neural network that consists of a stem layer, several stages, and a head. Each stage contains multiple residual blocks, which are composed of depthwise and pointwise convolutions. The stem layer is a $3{\times}3$ convolution that reduces the spatial resolution of the input and increases the number of channels. The head is a linear layer that produces the output logits.
 
-ここに含めるリソースの送信に興味がある場合は、お気軽にプル リクエストを開いてください。審査させていただきます。リソースは、既存のリソースを複製するのではなく、何か新しいものを示すことが理想的です。
+The main difference between ConvNeXT and traditional ConvNets is the use of depthwise and pointwise convolutions in the residual blocks. Depthwise convolutions apply a single filter to each input channel, while pointwise convolutions combine the output of the depthwise convolutions using a $1{\times}1$ convolution. This allows ConvNeXT to model local interactions in a way that is similar to transformers, while maintaining the efficiency and simplicity of ConvNets.
 
-## ConvNextConfig
+<img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/convnext_block.jpg" alt="Block diagram" width="600"/>
 
-[[autodoc]] ConvNextConfig
+<small> ConvNeXT block. <a href="https://arxiv.org/abs/2201.03545">Paper</a>.</small>
 
-## ConvNextFeatureExtractor
+## Training
 
-[[autodoc]] ConvNextFeatureExtractor
+The ConvNeXT model was trained on the ImageNet-21k dataset, which contains 14 million images and 21,841 classes. The model was trained using the AdamW optimizer with a batch size of 256 and a learning rate of 1e-3. The model was trained for 90 epochs, with a linear learning rate warmup for the first 10 epochs and a cosine learning rate decay for the remaining epochs.
 
-## ConvNextImageProcessor
+## Usage
 
-[[autodoc]] ConvNextImageProcessor
-    - preprocess
+The ConvNeXT model can be used for image classification tasks. It can be fine-tuned on a downstream task by adding a classification head on top of the pre-trained model and training it on the downstream dataset.
 
-<frameworkcontent>
-<pt>
+Here is an example of how to use the ConvNeXT model for image classification in PyTorch:
 
-## ConvNextModel
 
-[[autodoc]] ConvNextModel
-    - forward
 
-## ConvNextForImageClassification
 
-[[autodoc]] ConvNextForImageClassification
-    - forward
+The `logits` tensor will contain the raw predictions for each class. To get the predicted class, you can use the `argmax` function:
 
-</pt>
-<tf>
 
-## TFConvNextModel
 
-[[autodoc]] TFConvNextModel
-    - call
 
-## TFConvNextForImageClassification
+## Limitations
 
-[[autodoc]] TFConvNextForImageClassification
-    - call
+The ConvNeXT model has the following limitations:
 
-</tf>
-</frameworkcontent>
+- It was trained on the ImageNet-21k dataset, which may not be representative of other datasets.
+- It may not perform well on tasks that require a high level of abstraction or global context.
+- It may not be robust to adversarial attacks or data corruption.
+
+## Ethical considerations
+
+The ConvNeXT model should be used responsibly and ethically. It should not be used for any
