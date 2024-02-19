@@ -1,321 +1,98 @@
-<!--Copyright 2020 The HuggingFace Team. All rights reserved.
+<!-- Copyright 2020 The HuggingFace Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
-an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+â ï¸ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
-
 -->
 
 # Model outputs
 
-すべてのモデルには、[`~utils.ModelOutput`] のサブクラスのインスタンスである出力があります。それらは
-モデルによって返されるすべての情報を含むデータ構造ですが、タプルまたは
-辞書。
+All models have outputs of the form [`~util.ModelOutput`], which are dictionaries containing various information about 
+the model's output. These dictionaries can contain model-specific keys, but they all share the following base keys:
 
-これがどのようになるかを例で見てみましょう。
+- `loss`: The loss associated with the model's output. This is only present if the model is being trained or if the 
+`output_attentions` argument is set to `True`.
+- `logits`: The raw, unnormalized scores for each class in the model's output.
 
-```python
-from transformers import BertTokenizer, BertForSequenceClassification
-import torch
+Here is an example of how to use a model and access its outputs:
 
-tokenizer = BertTokenizer.from_pretrained("google-bert/bert-base-uncased")
-model = BertForSequenceClassification.from_pretrained("google-bert/bert-base-uncased")
 
-inputs = tokenizer("Hello, my dog is cute", return_tensors="pt")
-labels = torch.tensor([1]).unsqueeze(0)  # Batch size 1
-outputs = model(**inputs, labels=labels)
-```
 
-`outputs`オブジェクトは[`~modeling_outputs.SequenceClassifierOutput`]である。
-これは、オプションで `loss`、`logits`、オプションで `hidden_states`、オプションで `attentions` 属性を持つことを意味します。
-オプションの `attentions` 属性を持つことを意味する。ここでは、`labels`を渡したので`loss`があるが、`hidden_states`と`attentions`はない。
-`output_hidden_states=True`や`output_attentions=True`を渡していないので、`hidden_states`と`attentions`はない。
-`output_attentions=True`を渡さなかったからだ。
 
-<Tip>
+In this example, `outputs` is an instance of [`~modeling_outputs.SequenceClassifierOutput`], which has the following keys:
 
-`output_hidden_states=True`を渡すと、`outputs.hidden_states[-1]`が `outputs.last_hidden_states` と正確に一致することを期待するかもしれない。
-しかし、必ずしもそうなるとは限りません。モデルによっては、最後に隠された状態が返されたときに、正規化やその後の処理を適用するものもあります。
+- `loss`: The loss associated with the model's output. This is only present if the model is being trained or if the 
+`output_attentions` argument is set to `True`.
+- `logits`: The raw, unnormalized scores for each class in the model's output.
+- `hidden_states`: The hidden states for each layer in the model. This is only present if the `output_hidden_states` 
+argument is set to `True`.
+- `attentions`: The attention weights for each layer in the model. This is only present if the `output_attentions` 
+argument is set to `True`.
 
-</Tip>
+In this example, `outputs.loss` will be `None` because the model is not being trained and `outputs.attentions` will 
+also be `None` because the `output_attentions` argument was not set to `True`.
 
+You can access the values of these keys using dictionary syntax, like so:
 
-通常と同じように各属性にアクセスできます。その属性がモデルから返されなかった場合は、
-は `None`を取得します。ここで、たとえば`outputs.loss`はモデルによって計算された損失であり、`outputs.attentions`は
-`None`。
 
-`outputs`オブジェクトをタプルとして考える場合、`None`値を持たない属性のみが考慮されます。
-たとえば、ここには 2 つの要素、`loss`、次に`logits`があります。
 
-```python
-outputs[:2]
-```
 
-たとえば、タプル `(outputs.loss, Outputs.logits)` を返します。
+If you want to access only the first few keys of the dictionary, you can use slicing:
 
-`outputs`オブジェクトを辞書として考慮する場合、「None」を持たない属性のみが考慮されます。
-価値観。たとえば、ここには`loss` と `logits`という 2 つのキーがあります。
 
-ここでは、複数のモデル タイプで使用される汎用モデルの出力を文書化します。具体的な出力タイプは次のとおりです。
-対応するモデルのページに記載されています。
 
-## ModelOutput
 
-[[autodoc]] utils.ModelOutput
-    - to_tuple
+This will return a new dictionary containing only the `loss` and `logits` keys.
 
-## BaseModelOutput
+You can also convert the dictionary to a tuple using the `to_tuple` method:
 
-[[autodoc]] modeling_outputs.BaseModelOutput
 
-## BaseModelOutputWithPooling
 
-[[autodoc]] modeling_outputs.BaseModelOutputWithPooling
 
-## BaseModelOutputWithCrossAttentions
+This will return a tuple containing the values of the `loss`, `logits`, `hidden_states`, and `attentions` keys, in that 
+order.
 
-[[autodoc]] modeling_outputs.BaseModelOutputWithCrossAttentions
+Here is a list of all the possible model output classes:
 
-## BaseModelOutputWithPoolingAndCrossAttentions
-
-[[autodoc]] modeling_outputs.BaseModelOutputWithPoolingAndCrossAttentions
-
-## BaseModelOutputWithPast
-
-[[autodoc]] modeling_outputs.BaseModelOutputWithPast
-
-## BaseModelOutputWithPastAndCrossAttentions
-
-[[autodoc]] modeling_outputs.BaseModelOutputWithPastAndCrossAttentions
-
-## Seq2SeqModelOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqModelOutput
-
-## CausalLMOutput
-
-[[autodoc]] modeling_outputs.CausalLMOutput
-
-## CausalLMOutputWithCrossAttentions
-
-[[autodoc]] modeling_outputs.CausalLMOutputWithCrossAttentions
-
-## CausalLMOutputWithPast
-
-[[autodoc]] modeling_outputs.CausalLMOutputWithPast
-
-## MaskedLMOutput
-
-[[autodoc]] modeling_outputs.MaskedLMOutput
-
-## Seq2SeqLMOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqLMOutput
-
-## NextSentencePredictorOutput
-
-[[autodoc]] modeling_outputs.NextSentencePredictorOutput
-
-## SequenceClassifierOutput
-
-[[autodoc]] modeling_outputs.SequenceClassifierOutput
-
-## Seq2SeqSequenceClassifierOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqSequenceClassifierOutput
-
-## MultipleChoiceModelOutput
-
-[[autodoc]] modeling_outputs.MultipleChoiceModelOutput
-
-## TokenClassifierOutput
-
-[[autodoc]] modeling_outputs.TokenClassifierOutput
-
-## QuestionAnsweringModelOutput
-
-[[autodoc]] modeling_outputs.QuestionAnsweringModelOutput
-
-## Seq2SeqQuestionAnsweringModelOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqQuestionAnsweringModelOutput
-
-## Seq2SeqSpectrogramOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqSpectrogramOutput
-
-## SemanticSegmenterOutput
-
-[[autodoc]] modeling_outputs.SemanticSegmenterOutput
-
-## ImageClassifierOutput
-
-[[autodoc]] modeling_outputs.ImageClassifierOutput
-
-## ImageClassifierOutputWithNoAttention
-
-[[autodoc]] modeling_outputs.ImageClassifierOutputWithNoAttention
-
-## DepthEstimatorOutput
-
-[[autodoc]] modeling_outputs.DepthEstimatorOutput
-
-## Wav2Vec2BaseModelOutput
-
-[[autodoc]] modeling_outputs.Wav2Vec2BaseModelOutput
-
-## XVectorOutput
-
-[[autodoc]] modeling_outputs.XVectorOutput
-
-## Seq2SeqTSModelOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqTSModelOutput
-
-## Seq2SeqTSPredictionOutput
-
-[[autodoc]] modeling_outputs.Seq2SeqTSPredictionOutput
-
-## SampleTSPredictionOutput
-
-[[autodoc]] modeling_outputs.SampleTSPredictionOutput
-
-## TFBaseModelOutput
-
-[[autodoc]] modeling_tf_outputs.TFBaseModelOutput
-
-## TFBaseModelOutputWithPooling
-
-[[autodoc]] modeling_tf_outputs.TFBaseModelOutputWithPooling
-
-## TFBaseModelOutputWithPoolingAndCrossAttentions
-
-[[autodoc]] modeling_tf_outputs.TFBaseModelOutputWithPoolingAndCrossAttentions
-
-## TFBaseModelOutputWithPast
-
-[[autodoc]] modeling_tf_outputs.TFBaseModelOutputWithPast
-
-## TFBaseModelOutputWithPastAndCrossAttentions
-
-[[autodoc]] modeling_tf_outputs.TFBaseModelOutputWithPastAndCrossAttentions
-
-## TFSeq2SeqModelOutput
-
-[[autodoc]] modeling_tf_outputs.TFSeq2SeqModelOutput
-
-## TFCausalLMOutput
-
-[[autodoc]] modeling_tf_outputs.TFCausalLMOutput
-
-## TFCausalLMOutputWithCrossAttentions
-
-[[autodoc]] modeling_tf_outputs.TFCausalLMOutputWithCrossAttentions
-
-## TFCausalLMOutputWithPast
-
-[[autodoc]] modeling_tf_outputs.TFCausalLMOutputWithPast
-
-## TFMaskedLMOutput
-
-[[autodoc]] modeling_tf_outputs.TFMaskedLMOutput
-
-## TFSeq2SeqLMOutput
-
-[[autodoc]] modeling_tf_outputs.TFSeq2SeqLMOutput
-
-## TFNextSentencePredictorOutput
-
-[[autodoc]] modeling_tf_outputs.TFNextSentencePredictorOutput
-
-## TFSequenceClassifierOutput
-
-[[autodoc]] modeling_tf_outputs.TFSequenceClassifierOutput
-
-## TFSeq2SeqSequenceClassifierOutput
-
-[[autodoc]] modeling_tf_outputs.TFSeq2SeqSequenceClassifierOutput
-
-## TFMultipleChoiceModelOutput
-
-[[autodoc]] modeling_tf_outputs.TFMultipleChoiceModelOutput
-
-## TFTokenClassifierOutput
-
-[[autodoc]] modeling_tf_outputs.TFTokenClassifierOutput
-
-## TFQuestionAnsweringModelOutput
-
-[[autodoc]] modeling_tf_outputs.TFQuestionAnsweringModelOutput
-
-## TFSeq2SeqQuestionAnsweringModelOutput
-
-[[autodoc]] modeling_tf_outputs.TFSeq2SeqQuestionAnsweringModelOutput
-
-## FlaxBaseModelOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxBaseModelOutput
-
-## FlaxBaseModelOutputWithPast
-
-[[autodoc]] modeling_flax_outputs.FlaxBaseModelOutputWithPast
-
-## FlaxBaseModelOutputWithPooling
-
-[[autodoc]] modeling_flax_outputs.FlaxBaseModelOutputWithPooling
-
-## FlaxBaseModelOutputWithPastAndCrossAttentions
-
-[[autodoc]] modeling_flax_outputs.FlaxBaseModelOutputWithPastAndCrossAttentions
-
-## FlaxSeq2SeqModelOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxSeq2SeqModelOutput
-
-## FlaxCausalLMOutputWithCrossAttentions
-
-[[autodoc]] modeling_flax_outputs.FlaxCausalLMOutputWithCrossAttentions
-
-## FlaxMaskedLMOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxMaskedLMOutput
-
-## FlaxSeq2SeqLMOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxSeq2SeqLMOutput
-
-## FlaxNextSentencePredictorOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxNextSentencePredictorOutput
-
-## FlaxSequenceClassifierOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxSequenceClassifierOutput
-
-## FlaxSeq2SeqSequenceClassifierOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxSeq2SeqSequenceClassifierOutput
-
-## FlaxMultipleChoiceModelOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxMultipleChoiceModelOutput
-
-## FlaxTokenClassifierOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxTokenClassifierOutput
-
-## FlaxQuestionAnsweringModelOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxQuestionAnsweringModelOutput
-
-## FlaxSeq2SeqQuestionAnsweringModelOutput
-
-[[autodoc]] modeling_flax_outputs.FlaxSeq2SeqQuestionAnsweringModelOutput
+- [`~utils.ModelOutput`]
+- [`~modeling_outputs.BaseModelOutput`]
+- [`~modeling_outputs.BaseModelOutputWithPooling`]
+- [`~modeling_outputs.BaseModelOutputWithCrossAttentions`]
+- [`~modeling_outputs.BaseModelOutputWithPoolingAndCrossAttentions`]
+- [`~modeling_outputs.BaseModelOutputWithPast`]
+- [`~modeling_outputs.BaseModelOutputWithPastAndCrossAttentions`]
+- [`~modeling_outputs.Seq2SeqModelOutput`]
+- [`~modeling_outputs.CausalLMOutput`]
+- [`~modeling_outputs.CausalLMOutputWithCrossAttentions`]
+- [`~modeling_outputs.CausalLMOutputWithPast`]
+- [`~modeling_outputs.MaskedLMOutput`]
+- [`~modeling_outputs.Seq2SeqLMOutput`]
+- [`~modeling_outputs.NextSentencePredictorOutput`]
+- [`~modeling_outputs.SequenceClassifierOutput`]
+- [`~modeling_outputs.Seq2SeqSequenceClassifierOutput`]
+- [`~modeling_outputs.MultipleChoiceModelOutput`]
+- [`~modeling_outputs.TokenClassifierOutput`]
+- [`~modeling_outputs.QuestionAnsweringModelOutput`]
+- [`~modeling_outputs.Seq2SeqQuestionAnsweringModelOutput`]
+- [`~modeling_outputs.Seq2SeqSpectrogramOutput`]
+- [`~modeling_outputs.SemanticSegmenterOutput`]
+- [`~modeling_outputs.ImageClassifierOutput`]
+- [`~modeling_outputs.ImageClassifierOutputWithNoAttention`]
+- [`~modeling_outputs.DepthEstimatorOutput`]
+- [`~modeling_outputs.Wav2Vec2BaseModelOutput`]
+- [`~modeling_outputs.XVectorOutput`]
+- [`~modeling_outputs.Seq2SeqTSModelOutput`]
+- [`~modeling_outputs.Seq2SeqTSPredictionOutput`]
+- [`~modeling_outputs.SampleTSPredictionOutput`]
+- [`~modeling_tf_outputs.TFBaseModelOutput`]
+- [`~modeling_tf_outputs.TFBaseModelOutputWithPooling`]
+- [`~modeling_tf_outputs.TFBaseModelOutputWithPoolingAndCrossAttentions`]
+- [`~modeling
