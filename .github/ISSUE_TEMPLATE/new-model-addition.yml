@@ -1,31 +1,51 @@
-name: "\U0001F31F New model addition"
-description: Submit a proposal/request to implement a new model
+# Name of the form
+name: "🤖 New model addition"
+
+# Description of the form
+description: 
+Submit a proposal/request to implement a new model
+
+# Labels for the form
 labels: [ "New model" ]
 
+# The body of the form
 body:
+  # A textarea for the user to input a model description
   - type: textarea
     id: description-request
+    
+    # Validations for the textarea
     validations:
       required: true
+    
+    # Attributes for the textarea
     attributes:
       label: Model description
       description: |
-        Put any and all important information relative to the model
+        # Put any and all important information relative to the model here
 
+  # A checkbox for the user to indicate the open source status of the model
   - type: checkboxes
     id: information-tasks
+    
+    # Attributes for the checkbox
     attributes:
       label: Open source status
       description: |
-          Please note that if the model implementation isn't available or if the weights aren't open-source, we are less likely to implement it in `transformers`.
+        # Please note that if the model implementation isn't available or if the weights aren't open-source, we are less likely to implement it in transformers.
+
+      # Options for the checkbox
       options:
         - label: "The model implementation is available"
         - label: "The model weights are available"
 
+  # A textarea for the user to provide additional information about the model
   - type: textarea
     id: additional-info
+    
+    # Attributes for the textarea
     attributes:
       label: Provide useful links for the implementation
       description: |
-        Please provide information regarding the implementation, the weights, and the authors.
-        Please mention the authors by @gh-username if you're aware of their usernames.
+        # Please provide information regarding the implementation, the weights, and the authors.
+        # Please mention the authors by @gh-username if you're aware of their usernames.
