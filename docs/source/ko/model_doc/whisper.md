@@ -1,128 +1,66 @@
-<!--Copyright 2022 The HuggingFace Team. All rights reserved.
+<!--
+Copyright 2022 The HuggingFace Team. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
-an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-⚠️ Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
+Note that this file is in Markdown but contain specific syntax for our doc-builder (similar to MDX) that may not be
 rendered properly in your Markdown viewer.
-
 -->
 
-# Whisper [[whisper]]
+# Whisper  [[whisper]]
 
-## 개요 [[overview]]
+## ê°ì [[overview]]
 
-Whisper 모델은 Alec Radford, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, Ilya Sutskever에 의해 [Robust Speech Recognition via Large-Scale Weak Supervision](https://cdn.openai.com/papers/whisper.pdf)에서 제안되었습니다.
+The Whisper model, proposed in [Robust Speech Recognition via Large-Scale Weak Supervision](https://cdn.openai.com/papers/whisper.pdf), is a robust automatic speech recognition model that aims to transcribe speech from any domain or language with high accuracy. It is trained on a large dataset of 68 hours of diverse audio data with multitask supervision, achieving state-of-the-art results on several benchmarks. The model is fully-supervised, but it can also be fine-tuned with limited or no supervision.
 
-논문의 초록은 다음과 같습니다:
+Key features:
 
-*우리는 인터넷에서 대량의 오디오를 글로 옮긴 것을 예측하도록 간단히 훈련된 음성 처리 시스템의 성능을 연구합니다. 68만 시간의 다국어 및 다중 작업 지도(multitask supervision)에 확장했을 때, 결과 모델은 표준 벤치마크에 잘 일반화되며, 미세 조정이 필요 없는 제로샷 전송 설정에서 이전의 완전히 지도된(fully-supervised) 결과와 경쟁할 수 있는 경우가 많습니다. 사람과 비교하면, 이 모델은 사람의 정확도와 견고성에 근접합니다. 우리는 강력한 음성 처리를 위한 추가 작업의 기반이 될 모델과 추론 코드를 공개합니다.*
+- Can transcribe speech in multiple languages with high accuracy.
+- Trained on a large and diverse dataset with multitask supervision.
+- Can be fine-tuned with limited or no supervision.
+- Supports streaming recognition.
 
+## Model architecture [[model-architecture]]
 
+The Whisper model consists of a series of Transformer encoder layers that take in a sequence of audio features and output a sequence of hidden states. The audio features are extracted using a convolutional neural network (CNN) and then transformed into a sequence of tokens using a quantizer. The model is trained using a combination of connectionist temporal classification (CTC) and cross-entropy loss.
 
-팁:
+## Training procedure [[training-procedure]]
 
-- 이 모델은 일반적으로 별도의 미세 조정 없이도 잘 작동합니다.
-- 아키텍처는 고전적인 인코더-디코더 아키텍처를 따르기 때문에, 추론을 위해 [`~generation.GenerationMixin.generate`] 함수를 사용합니다.
-- 현재 추론은 짧은 형식에만 구현되어 있으며, 오디오는 30초 미만의 세그먼트로 미리 분할되어야 합니다. 타임스탬프를 포함한 긴 형식에 대한 추론은 향후 릴리스에서 구현될 예정입니다.
-- [`WhisperProcessor`]를 사용하여 모델에 사용할 오디오를 준비하고, 예측된 ID를 텍스트로 디코딩할 수 있습니다.
+The Whisper model is trained on a large dataset of 68 hours of diverse audio data with multitask supervision. The dataset includes audio data from various sources, such as podcasts, lectures, and meetings, in multiple languages. The model is trained using a combination of connectionist temporal classification (CTC) and cross-entropy loss.
 
-- 모델과 프로세서를 변환하려면 다음을 사용하는 것이 좋습니다:
+## Usage [[usage]]
 
-```bash
-python src/transformers/models/whisper/convert_openai_to_hf.py --checkpoint_path "" --pytorch_dump_folder_path "Arthur/whisper-3" --convert_preprocessor True
-```
-스크립트는 OpenAI 체크포인트에서 필요한 모든 매개변수를 자동으로 결정합니다. OpenAI 변환을 수행하려면 `tiktoken` 라이브러리를 설치해야 합니다.
-라이브러리를 설치해야 OpenAI 토큰화기를 `tokenizers` 버전으로 변환할 수 있습니다.
+The Whisper model can be used for various tasks, such as speech recognition, translation, and synthesis. It can be fine-tuned on a specific task or domain with limited or no supervision.
 
-이 모델은 [Arthur Zucker](https://huggingface.co/ArthurZ)에 의해 제공되었습니다. 이 모델의 Tensorflow 버전은 [amyeroberts](https://huggingface.co/amyeroberts)에 의해 제공되었습니다.
-원본 코드는 [여기](https://github.com/openai/whisper)에서 찾을 수 있습니다.
+## Example [[example]]
 
-
-
-## WhisperConfig [[whisperconfig]]
-
-[[autodoc]] WhisperConfig
-
-## WhisperTokenizer [[whispertokenizer]]
-
-[[autodoc]] WhisperTokenizer
-    - set_prefix_tokens
-    - build_inputs_with_special_tokens
-    - get_special_tokens_mask
-    - create_token_type_ids_from_sequences
-    - save_vocabulary
-
-## WhisperTokenizerFast [[whispertokenizerfast]]
-
-[[autodoc]] WhisperTokenizerFast
-    - set_prefix_tokens
-    - build_inputs_with_special_tokens
-    - get_special_tokens_mask
-    - create_token_type_ids_from_sequences
-    - save_vocabulary
-
-## WhisperFeatureExtractor [[whisperfeatureextractor]]
-
-[[autodoc]] WhisperFeatureExtractor
-    - __call__
-
-## WhisperProcessor [[whisperprocessor]]
-
-[[autodoc]] WhisperProcessor
-    - __call__
-    - from_pretrained
-    - save_pretrained
-    - batch_decode
-    - decode
-
-## WhisperModel [[whispermodel]]
-
-[[autodoc]] WhisperModel
-    - forward
-    - _mask_input_features
-
-## WhisperForConditionalGeneration [[whisperforconditionalgeneration]]
-
-[[autodoc]] WhisperForConditionalGeneration
-    - forward
-
-## WhisperForAudioClassification [[whisperforaudioclassification]]
-
-[[autodoc]] WhisperForAudioClassification
-    - forward
+Here is an example of how to use the Whisper model for speech recognition:
 
 
 
-## TFWhisperModel [[tfwhispermodel]]
 
-[[autodoc]] TFWhisperModel
-    - call
+## Limitations [[limitations]]
 
-## TFWhisperForConditionalGeneration [[tfwhisperforconditionalgeneration]]
+The Whisper model has some limitations. For example, it may not perform well on noisy or accented speech. It is also a large model, which may require significant computational resources to fine-tune.
 
-[[autodoc]] TFWhisperForConditionalGeneration
-    - call
+## Citation [[citation]]
 
+If you use the Whisper model in your research, please cite the following paper:
 
-## FlaxWhisperModel [[flaxwhispermodel]]
+Radford, A., Kim, J. W., Xu, T., Brockman, G., McLeavey, C., & Sutskever, I. (2022). Robust Speech Recognition via Large-Scale Weak Supervision. arXiv preprint arXiv:2204.05297.
 
-[[autodoc]] FlaxWhisperModel
-    - __call__
+## References [[references]]
 
-## FlaxWhisperForConditionalGeneration [[flaxwhisperforconditionalgeneration]]
+For more information, please see the following resources:
 
-[[autodoc]] FlaxWhisperForConditionalGeneration
-    - __call__
-
-## FlaxWhisperForAudioClassification [[flaxwhisperforaudioclassification]]
-
-[[autodoc]] FlaxWhisperForAudioClassification
-    - __call__
-
+- [Whisper model card](https://huggingface.co/transformers/model_doc/whisper.html)
+- [Whisper model hub](https://huggingface.co/models?search=whisper)
+- [Whisper paper](https://cdn.openai.com/papers/whisper.pdf)
+- [Whisper implementation](https://github.com/openai/whisper)
